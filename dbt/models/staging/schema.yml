@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: main
+    description: "Source tables from the DuckDB database"
+    tables:
+      - name: yellow_clean
+        description: "Cleaned Yellow Taxi trips for 2024"
+      - name: green_clean
+        description: "Cleaned Green Taxi trips for 2024"
+      - name: vehicle_emissions
+        description: "Vehicle emissions lookup table"
+
