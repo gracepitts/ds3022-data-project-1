@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 DB_PATH = "emissions.duckdb"
 
 def transform_table(con, clean_table, transformed_table, pickup_col, dropoff_col, vehicle_type):
+    """Transform a cleaned trips table into a transformed table by adding
+    CO2, avg_mph, and datetime breakdown columns."""
     logger.info(f"Transforming {clean_table} -> {transformed_table}")
 
     # Drop transformed table if it already exists
@@ -56,6 +58,7 @@ def transform_table(con, clean_table, transformed_table, pickup_col, dropoff_col
     print(f"{transformed_table} created with {count} rows")
 
 def main():
+    """Main function: connect to DuckDB and run transformations for both Yellow and Green taxi data."""
     con = duckdb.connect(DB_PATH, read_only=False)
 
     # Transform Yellow taxi trips (tpep timestamps)
@@ -76,5 +79,6 @@ def main():
 
     con.close()
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # Script entry point
     main()
+

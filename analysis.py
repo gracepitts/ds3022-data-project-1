@@ -24,6 +24,7 @@ MONTH_NAMES = {
 }
 
 def table_exists(conn, name: str) -> bool:
+    """Check if a given table exists in the DuckDB database."""
     exists = conn.execute(
         "SELECT COUNT(*) FROM information_schema.tables WHERE table_name = ?",
         [name]
@@ -32,6 +33,7 @@ def table_exists(conn, name: str) -> bool:
     return exists
 
 def largest_trip(conn, table: str):
+    """Return the largest carbon-producing trip (CO₂ and distance) from a given table."""
     logger.info(f"Querying largest CO₂ trip from {table}")
     return conn.execute(f"""
         SELECT trip_co2_kgs, trip_distance
@@ -41,6 +43,7 @@ def largest_trip(conn, table: str):
     """).fetchone()
 
 def heaviest_and_lightest(conn, table: str, col: str):
+    """Return the periods (max and min) with the heaviest and lightest average CO₂ emissions."""
     logger.info(f"Calculating heaviest and lightest by {col} from {table}")
     df = conn.execute(f"""
         SELECT {col} AS period, AVG(trip_co2_kgs) AS avg_co2, COUNT(*) AS n
@@ -55,6 +58,7 @@ def heaviest_and_lightest(conn, table: str, col: str):
     return df.iloc[0].to_dict(), df.iloc[-1].to_dict()
 
 def monthly_totals(conn, table: str) -> pd.DataFrame:
+    """Fetch total CO₂ emissions grouped by month from a given table."""
     logger.info(f"Fetching monthly totals for {table}")
     return conn.execute(f"""
         SELECT month_of_year AS month, SUM(trip_co2_kgs) AS total_co2_kg
@@ -64,6 +68,7 @@ def monthly_totals(conn, table: str) -> pd.DataFrame:
     """).fetchdf()
 
 def print_heavy_light(label: str, max_row: dict, min_row: dict, transform=None):
+    """Print the heaviest and lightest periods with labels and log the results."""
     if not max_row or not min_row:
         logger.warning(f"{label}: No data available to report.")
         print(f"{label}: (no data)")
@@ -77,6 +82,7 @@ def print_heavy_light(label: str, max_row: dict, min_row: dict, transform=None):
     print(f"{label} — LEAST carbon-heavy:  {min_label} (avg kg = {min_row['avg_co2']:.4f}, n = {int(min_row['n'])})")
 
 def main():
+    """Main function: runs all analysis steps for both Yellow and Green taxi data and generates plots."""
     os.makedirs(OUT_DIR, exist_ok=True)
     logger.info("Starting analysis.py")
     
@@ -134,5 +140,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 

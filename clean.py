@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 DB_PATH = "emissions.duckdb"
 
-def get_column_name(con, table, candidates):
+def get_column_name(con, table, candidates):  # Function: find the correct column name from a list of candidates
     """Return the first matching column name from a list of candidates (handles yellow/green differences)."""
     rows = con.execute(f"PRAGMA table_info('{table}')").fetchall()
     cols = [r[1] for r in rows]   # Column names
@@ -21,7 +21,7 @@ def get_column_name(con, table, candidates):
                 return col
     return None
 
-def clean_table(con, raw_table, clean_table):
+def clean_table(con, raw_table, clean_table):  # Function: clean a raw taxi trips table and save into a new cleaned table
     logger.info(f"Cleaning {raw_table} -> {clean_table}")
 
     # Identify pickup/dropoff, passenger, and distance columns
@@ -71,7 +71,7 @@ def clean_table(con, raw_table, clean_table):
         logger.info(f"{clean_table} check - {desc}: {count}")
         print(f"{clean_table} check - {desc}: {count}")
 
-def main():
+def main():  # Function: main entry point to connect to DuckDB and clean both yellow and green 2024 tables
     con = duckdb.connect(DB_PATH, read_only=False)
 
     # Clean both yellow and green trips
@@ -80,5 +80,5 @@ def main():
 
     con.close()
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # Script entry point
     main()
